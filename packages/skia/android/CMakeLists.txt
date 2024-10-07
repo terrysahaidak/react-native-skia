@@ -226,6 +226,13 @@ message("-- TURBO   : " ${TURBOMODULES_LIB})
 
 add_definitions(-DREACT_NATIVE_VERSION=${REACT_NATIVE_VERSION})
 
+find_package(react-native-wgpu REQUIRED)
+
+set (WEBGPU_LIBS_PATH "${NODE_MODULES_DIR}/react-native-wgpu/libs/android/${ANDROID_ABI}")
+
+add_library(webgpu_dawn SHARED IMPORTED)
+set_property(TARGET webgpu_dawn PROPERTY IMPORTED_LOCATION "${WEBGPU_LIBS_PATH}/libwebgpu_dawn.so")
+
 # Link
 target_link_libraries(
         ${PACKAGE_NAME}
@@ -236,6 +243,8 @@ target_link_libraries(
         ${REACTNATIVEJNI_LIB}
         ${RUNTIMEEXECUTOR_LIB}
         ${TURBOMODULES_LIB}
+        react-native-wgpu::rnwgpu
+        webgpu_dawn
         ${SKIA_SVG_LIB}
         ${SKIA_SKSHAPER_LIB}
         ${SKIA_SKPARAGRAPH_LIB}

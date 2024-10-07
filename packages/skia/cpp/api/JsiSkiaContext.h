@@ -21,6 +21,12 @@
 
 #include "include/core/SkFont.h"
 #include "include/core/SkFontMetrics.h"
+#include "include/gpu/graphite/Context.h"
+#include "include/gpu/graphite/Recorder.h"
+#include "include/gpu/graphite/Recording.h"
+#include "include/gpu/graphite/Surface.h"
+#include "include/gpu/graphite/dawn/DawnBackendContext.h"
+#include <GPUAdapter.h>
 
 #pragma clang diagnostic pop
 
@@ -31,6 +37,10 @@ namespace jsi = facebook::jsi;
 class JsiSkiaContext : public JsiSkWrappingSharedPtrHostObject<SkiaContext> {
 public:
   EXPORT_JSI_API_TYPENAME(JsiSkiaContext, SkiaContext)
+
+  JSI_HOST_FUNCTION(createGraphite) {
+    return jsi::undefined();
+  }
 
   JSI_HOST_FUNCTION(getSurface) {
     auto surface = getObject()->getSurface();
@@ -45,6 +55,7 @@ public:
   }
 
   JSI_EXPORT_FUNCTIONS(JSI_EXPORT_FUNC(JsiSkiaContext, getSurface),
+                       JSI_EXPORT_FUNC(JsiSkiaContext, createGraphite),
                        JSI_EXPORT_FUNC(JsiSkiaContext, present))
 
   JsiSkiaContext(std::shared_ptr<RNSkPlatformContext> context,
@@ -66,6 +77,12 @@ public:
       void *surface = reinterpret_cast<void *>(nativeBufferPointer);
       auto width = static_cast<int>(arguments[1].asNumber());
       auto height = static_cast<int>(arguments[2].asNumber());
+
+
+      
+      skgpu::graphite::DawnBackendContext dawnContext;
+      
+      
       auto result =
           context->makeContextFromNativeSurface(surface, width, height);
       // Return the newly constructed object

@@ -1,0 +1,76 @@
+diff --git a/node_modules/react-native-wgpu/android/build.gradle b/node_modules/react-native-wgpu/android/build.gradle
+index 3eedf31..e348d65 100644
+--- a/node_modules/react-native-wgpu/android/build.gradle
++++ b/node_modules/react-native-wgpu/android/build.gradle
+@@ -69,6 +69,31 @@ def supportsNamespace() {
+   return (major == 7 && minor >= 3) || major >= 8
+ }
+ 
++def prefabHeadersDir = project.file("$buildDir/prefab-headers/rnwgpu")
++
++task prepareHeaders(type: Copy) {
++  from fileTree(dir: '../cpp', include: '**/*.h', exclude: ['rnwgpu/**', "jsi/**"]) // Include all .h files recursively
++  into "${project.buildDir}/headers/rnwgpu/"
++
++  // Preserve the directory structure
++  eachFile { fileCopyDetails ->
++    fileCopyDetails.relativePath = fileCopyDetails.relativePath
++  }
++
++  includeEmptyDirs = false
++}
++
++task prepareHeadersFlat(type: Copy) {
++  from fileTree(dir: '../cpp/rnwgpu').filter { it.isFile() }
++  from fileTree(dir: '../cpp/jsi').filter { it.isFile() }
++  include "*.h"
++  into "${project.buildDir}/headers/rnwgpu/"
++  includeEmptyDirs = false
++}
++
++preBuild.dependsOn(prepareHeaders, prepareHeadersFlat)
++
++
+ android {
+   compileSdkVersion getExtOrIntegerDefault("compileSdkVersion")
+ 
+@@ -87,15 +112,22 @@ android {
+   }
+ 
+   packagingOptions {
+-    exclude "lib/arm64-v8a/libjsi.so"
+-    exclude "lib/x86_64/libjsi.so"
+-    exclude "lib/x86/libjsi.so"
+-    exclude "lib/armeabi-v7a/libjsi.so"
++     excludes = [
++       "**/libc++_shared.so",
++       "**/libfbjni.so",
++       "**/libjsi.so",
++       "**/libreact_nativemodule_core.so",
++       "**/libreactnativejni.so",
++       "**/libruntimeexecutor.so",
++       "**/libturbomodulejsijni.so",
++       "META-INF/**"
++    ]
+   }
+ 
+   buildFeatures {
+     buildConfig true
+     prefab true
++    prefabPublishing true
+   }
+ 
+   buildTypes {
+@@ -104,6 +136,12 @@ android {
+     }
+   }
+ 
++  prefab {
++    rnwgpu {
++      headers "${project.buildDir}/headers/rnwgpu/"
++    }
++  }
++
+   lintOptions {
+     disable "GradleCompatible"
+   }

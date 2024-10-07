@@ -41,6 +41,8 @@ const ParagraphOutputsAndroid = BUILD_WITH_PARAGRAPH
   : [];
 
 export const commonArgs = [
+  ["skia_support_gpu", true],
+  ["skia_use_dawn", false],
   ["skia_use_piex", true],
   ["skia_use_sfntly", false],
   ["skia_use_system_expat", false],
@@ -51,6 +53,7 @@ export const commonArgs = [
   ["skia_enable_tools", false],
   ["is_official_build", true],
   ["skia_enable_skottie", true],
+  ["skia_enable_graphite", true],
   ["is_debug", false],
   ["skia_enable_pdf", false],
   ["skia_enable_flutter_defines", true],

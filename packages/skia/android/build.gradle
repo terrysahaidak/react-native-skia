@@ -258,6 +258,8 @@ dependencies {
         extractJNI("com.facebook.fbjni:fbjni:0.2.2")
     }
 
+    implementation project(":react-native-wgpu")
+
     if (!sourceBuild) {
         def rnAarMatcher = "**/react-native/**/*${buildType}.aar"
         if (REACT_NATIVE_VERSION < 69) {
